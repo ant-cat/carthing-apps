@@ -2,7 +2,7 @@
   "name": "carthing-apps",
   "description": "bridgething webapps by ant.cat",
   "homepage": "https://github.com/ant-cat/carthing-apps",
-  "icon": "https://ant-cat.github.io/carthing-apps/icons/01a18fa7-97d6-7564-84c6-ad1e5386ec77.png",
-  "base_url": "https://ant-cat.github.io/carthing-apps",
+  "icon": "https://raw.githubusercontent.com/ant-cat/carthing-apps/gh-pages/icons/01a18fa7-97d6-7564-84c6-ad1e5386ec77.png",
+  "base_url": "https://raw.githubusercontent.com/ant-cat/carthing-apps/gh-pages",
   "recommended_sources": []
 }
