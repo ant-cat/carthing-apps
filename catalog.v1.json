@@ -1,12 +1,12 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-10-31T03:14:59.538Z",
+  "updated_at": "2026-10-31T03:17:02.121Z",
   "repo": {
     "name": "carthing-apps",
     "description": "bridgething webapps by ant.cat",
     "homepage": "https://github.com/ant-cat/carthing-apps",
-    "icon": "https://ant-cat.github.io/carthing-apps/icons/01a18fa7-97d6-7564-84c6-ad1e5386ec77.png"
+    "icon": "https://raw.githubusercontent.com/ant-cat/carthing-apps/gh-pages/icons/01a18fa7-97d6-7564-84c6-ad1e5386ec77.png"
   },
   "apps": [
     {
@@ -14,11 +14,11 @@
       "name": "Portrait",
       "description": "Stand your Car Thing on its side: a vertical now-playing screen for whatever your desktop or phone is playing, with synced lyrics.",
       "author": "ant.cat",
-      "icon": "https://ant-cat.github.io/carthing-apps/icons/01a18fa7-97d6-7564-84c6-ad1e5386ec77.png",
+      "icon": "https://raw.githubusercontent.com/ant-cat/carthing-apps/gh-pages/icons/01a18fa7-97d6-7564-84c6-ad1e5386ec77.png",
       "screenshots": [
-        "https://ant-cat.github.io/carthing-apps/screenshots/01a18fa7-97d6-7564-84c6-ad1e5386ec77/01-now-playing.png",
-        "https://ant-cat.github.io/carthing-apps/screenshots/01a18fa7-97d6-7564-84c6-ad1e5386ec77/02-lyrics.png",
-        "https://ant-cat.github.io/carthing-apps/screenshots/01a18fa7-97d6-7564-84c6-ad1e5386ec77/03-dial-bottom-volume.png"
+        "https://raw.githubusercontent.com/ant-cat/carthing-apps/gh-pages/screenshots/01a18fa7-97d6-7564-84c6-ad1e5386ec77/01-now-playing.png",
+        "https://raw.githubusercontent.com/ant-cat/carthing-apps/gh-pages/screenshots/01a18fa7-97d6-7564-84c6-ad1e5386ec77/02-lyrics.png",
+        "https://raw.githubusercontent.com/ant-cat/carthing-apps/gh-pages/screenshots/01a18fa7-97d6-7564-84c6-ad1e5386ec77/03-dial-bottom-volume.png"
       ],
       "categories": [
         "music"
@@ -30,12 +30,12 @@
           "version": "0.1.0",
           "released_at": "2026-10-31T03:14:59.479Z",
           "download": {
-            "url": "https://ant-cat.github.io/carthing-apps/r/01a18fa7-97d6-7564-84c6-ad1e5386ec77/0.1.0.zip",
+            "url": "https://raw.githubusercontent.com/ant-cat/carthing-apps/gh-pages/r/01a18fa7-97d6-7564-84c6-ad1e5386ec77/0.1.0.zip",
             "size": 939755,
             "sha256": "7fa9e0070ec30366ad4ad4a83566d3b1bcdb1a4229a09f55f34c9b1877d0220d"
           },
           "settings": {
-            "url": "https://ant-cat.github.io/carthing-apps/s/01a18fa7-97d6-7564-84c6-ad1e5386ec77/0.1.0.html",
+            "url": "https://raw.githubusercontent.com/ant-cat/carthing-apps/gh-pages/s/01a18fa7-97d6-7564-84c6-ad1e5386ec77/0.1.0.html",
             "size": 39605,
             "sha256": "6439e8d62c09cabf8da3080e64a16245967994281bade56c02e083ab021a2d46"
           },
