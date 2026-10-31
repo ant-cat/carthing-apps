@@ -1,0 +1,63 @@
+{
+  "id": "01a18fa7-97d6-7564-84c6-ad1e5386ec77",
+  "name": "Portrait",
+  "version": "0.1.0",
+  "description": "Stand your Car Thing on its side: a vertical now-playing screen for whatever your desktop or phone is playing, with synced lyrics.",
+  "icon": "icon.png",
+  "settings": "settings.html",
+  "config": [
+    {
+      "type": "enum",
+      "data": {
+        "key": "rotation",
+        "label": "Orientation",
+        "description": "Which way the Car Thing is turned. Holding the back button on the device flips it too.",
+        "choices": [
+          "dial-top",
+          "dial-bottom"
+        ],
+        "choiceLabels": {
+          "dial-top": "Dial at the top",
+          "dial-bottom": "Dial at the bottom"
+        },
+        "default": "dial-top"
+      }
+    },
+    {
+      "type": "enum",
+      "data": {
+        "key": "dial",
+        "label": "Dial turns",
+        "description": "What turning the dial does.",
+        "choices": [
+          "volume",
+          "seek",
+          "skip"
+        ],
+        "choiceLabels": {
+          "volume": "Change volume",
+          "seek": "Scrub through the track",
+          "skip": "Skip tracks"
+        },
+        "default": "volume"
+      }
+    },
+    {
+      "type": "boolean",
+      "data": {
+        "key": "invertDial",
+        "label": "Reverse dial direction",
+        "description": "Flip which way is up when turning the dial.",
+        "default": false
+      }
+    }
+  ],
+  "permissions": [],
+  "overlays": {
+    "volume": false
+  },
+  "art": {
+    "heroPx": 416,
+    "thumbPx": 96
+  }
+}

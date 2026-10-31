@@ -1,0 +1,11 @@
+{
+  "author": "ant.cat",
+  "homepage": "https://ant.cat/writing/portrait",
+  "source": "https://github.com/ant-cat/carthing-apps",
+  "icon": null,
+  "screenshots": [],
+  "categories": [
+    "music"
+  ],
+  "min_libbridgething_version": "0.16.0"
+}
