@@ -1,7 +1,7 @@
 {
   "id": "01a18fa7-97d6-7564-84c6-ad1e5386ec77",
   "name": "Portrait",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Stand your Car Thing on its side: a vertical now-playing screen for whatever your desktop or phone is playing, with synced lyrics.",
   "icon": "icon.png",
   "settings": "settings.html",
@@ -50,6 +50,38 @@
         "description": "Flip which way is up when turning the dial.",
         "default": false
       }
+    },
+    {
+      "type": "enum",
+      "data": {
+        "key": "sleepWhenPaused",
+        "label": "Screen off when paused",
+        "description": "Turn the screen off after the music has been paused this long. Touch, the dial or any button wakes it.",
+        "choices": [
+          "off",
+          "2",
+          "5",
+          "15",
+          "30"
+        ],
+        "choiceLabels": {
+          "2": "After 2 minutes",
+          "5": "After 5 minutes",
+          "15": "After 15 minutes",
+          "30": "After 30 minutes",
+          "off": "Never"
+        },
+        "default": "5"
+      }
+    },
+    {
+      "type": "boolean",
+      "data": {
+        "key": "followLaptop",
+        "label": "Screen off with my laptop",
+        "description": "Turn the screen off when your Mac's display sleeps (needs the Bridgething desktop app) or when your laptop and phone disconnect, and back on when they return.",
+        "default": true
+      }
     }
   ],
   "permissions": [],
@@ -59,5 +91,12 @@
   "art": {
     "heroPx": 416,
     "thumbPx": 96
+  },
+  "extension": {
+    "entry": "extension/desktop.mjs",
+    "permissions": [
+      "run:/usr/bin/osascript"
+    ],
+    "api": 1
   }
 }

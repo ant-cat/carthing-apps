@@ -16,6 +16,9 @@ export type Settings = {
   rotation: Rotation;
   dial: DialMode;
   invertDial: boolean;
+  /** minutes, or null for never */
+  sleepWhenPaused: number | null;
+  followLaptop: boolean;
 };
 
 export type LyricsData =
@@ -24,7 +27,12 @@ export type LyricsData =
   | { status: 'plain'; text: string };
 
 export type Device = {
+  client: BridgethingClient | null;
   conn: ConnectionState;
+  /** true while the mac's display sleeps, null when the desktop add-on is not reporting */
+  laptopAsleep: boolean | null;
+  /** companions with a live link, null until the daemon reports peers */
+  linked: number | null;
   state: PlayerState | null;
   artUrl: string | null;
   liked: boolean;
@@ -49,7 +57,7 @@ export type Actions = {
   volumeStep: (dir: 1 | -1) => void;
 };
 
-const DEFAULTS: Settings = { rotation: 'dial-top', dial: 'volume', invertDial: false };
+const DEFAULTS: Settings = { rotation: 'dial-top', dial: 'volume', invertDial: false, sleepWhenPaused: 5, followLaptop: true };
 const REPEAT_NEXT: Record<RepeatMode, RepeatMode> = { off: 'all', all: 'one', one: 'off' };
 
 export const isDemo = typeof location !== 'undefined' && new URLSearchParams(location.search).has('demo');
@@ -58,6 +66,11 @@ function applySetting(s: Settings, key: string, value: string | null): Settings 
   if (key === 'rotation' && (value === 'dial-top' || value === 'dial-bottom')) return { ...s, rotation: value };
   if (key === 'dial' && (value === 'volume' || value === 'seek' || value === 'skip')) return { ...s, dial: value };
   if (key === 'invertDial') return { ...s, invertDial: value === 'true' };
+  if (key === 'sleepWhenPaused') {
+    const n = Number(value);
+    return { ...s, sleepWhenPaused: value === 'off' ? null : n > 0 ? n : DEFAULTS.sleepWhenPaused };
+  }
+  if (key === 'followLaptop') return { ...s, followLaptop: value !== 'false' };
   return s;
 }
 
@@ -71,10 +84,15 @@ export function useDevice(): Device {
   const [settings, setSettings] = useState<Settings>(() => {
     if (!isDemo) return DEFAULTS;
     const q = new URLSearchParams(location.search);
-    return applySetting(DEFAULTS, 'rotation', q.get('rotation'));
+    let s = applySetting(DEFAULTS, 'rotation', q.get('rotation'));
+    // fractional minutes are allowed here so the paused timer can be exercised quickly
+    if (q.has('sleep')) s = { ...s, sleepWhenPaused: q.get('sleep') === 'off' ? null : Number(q.get('sleep')) };
+    return s;
   });
   const [lyrics, setLyrics] = useState<LyricsData>({ status: 'idle' });
   const [lyricsWanted, setLyricsWanted] = useState(false);
+  const [laptopAsleep, setLaptopAsleep] = useState<boolean | null>(null);
+  const [linked, setLinked] = useState<number | null>(null);
   const receivedAt = useRef(performance.now());
   const demoVolume = useRef(0.6);
 
@@ -102,6 +120,14 @@ export function useDevice(): Device {
         // a companion edit wins over an on-device flip
         if (c.key === 'rotation') void client.store.delete({ key: 'rotation' });
       }),
+      client.forward.onJson(raw => {
+        const m = raw as { type?: string; asleep?: unknown; supported?: unknown };
+        if (m?.type !== 'display') return;
+        setLaptopAsleep(m.supported && typeof m.asleep === 'boolean' ? m.asleep : null);
+      }),
+      client.peer.onSnapshot(peers => {
+        setLinked(Object.values(peers).filter(p => p.companion.type === 'connected').length);
+      }),
       client.library.onFavoriteChanged(f => {
         setState(s => {
           if (s?.track?.uri === f.uri) setLiked(f.liked);
@@ -119,6 +145,8 @@ export function useDevice(): Device {
       setSettings(next);
     })();
     client.player.stateGet().then(r => r.ok && setPlayer(r.response.state));
+    // ask the desktop add-on, if there is one, for the display state; silence just means no add-on
+    void client.forward.json({ type: 'hello' }).catch(() => {});
     return () => offs.forEach(off => off());
   }, [client, setPlayer]);
 
@@ -165,6 +193,12 @@ export function useDevice(): Device {
       gone = true;
     };
   }, [client, lyricsWanted, trackKey, trackUri]);
+
+  // demo hooks so the screen-off triggers can be driven from devtools or a test
+  useEffect(() => {
+    if (!isDemo) return;
+    (window as unknown as { __portrait: unknown }).__portrait = { setLaptopAsleep, setLinked };
+  }, []);
 
   const stateRef = useRef(state);
   stateRef.current = state;
@@ -242,6 +276,9 @@ export function useDevice(): Device {
   );
 
   return {
+    client,
+    laptopAsleep,
+    linked,
     conn,
     state,
     artUrl,

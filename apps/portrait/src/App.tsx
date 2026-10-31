@@ -3,6 +3,7 @@ import { type Device, type Rotation, useDevice } from './device';
 import { Icon } from './icons';
 import { Lyrics } from './Lyrics';
 import { NowPlaying } from './NowPlaying';
+import { useScreenSleep } from './sleep';
 
 export type View = 'now' | 'lyrics';
 
@@ -17,6 +18,15 @@ export default function App() {
   const [scrub, setScrub] = useState<number | null>(null);
   useTick(250);
 
+  const sleep = useScreenSleep({
+    client: dev.client,
+    playing: dev.state?.playback.state === 'playing',
+    pausedMinutes: dev.settings.sleepWhenPaused,
+    followLaptop: dev.settings.followLaptop,
+    laptopAsleep: dev.laptopAsleep,
+    linked: dev.linked,
+  });
+
   const say = useCallback((text: string) => setToast({ text, at: Date.now() }), []);
 
   useEffect(() => {
@@ -26,11 +36,13 @@ export default function App() {
   useEffect(() => dev.wantLyrics(view === 'lyrics'), [view, dev.wantLyrics]);
 
   // the latest device and view, read from long-lived listeners
-  const live = useRef({ dev, view, scrub });
-  live.current = { dev, view, scrub };
+  const live = useRef({ dev, view, scrub, sleep });
+  live.current = { dev, view, scrub, sleep };
   const lastSkip = useRef(0);
 
   useHardware({
+    // every physical input passes here first; while the screen is dark it only wakes it
+    gate: () => live.current.sleep.noteInput(),
     onKey: key => {
       const { act } = live.current.dev;
       if (key === '1') act.prev();
@@ -73,10 +85,30 @@ export default function App() {
     return () => clearTimeout(t);
   }, [scrub, dev.act]);
 
+  const wokeAt = useRef(0);
+  const wasAsleep = useRef(false);
+  if (wasAsleep.current && !sleep.asleep) wokeAt.current = performance.now();
+  wasAsleep.current = sleep.asleep;
+
   const rotate = dev.settings.rotation === 'dial-top' ? 90 : -90;
 
   return (
-    <div className="stage" style={{ transform: `translate(-50%, -50%) rotate(${rotate}deg)` }}>
+    <div
+      className="stage"
+      style={{ transform: `translate(-50%, -50%) rotate(${rotate}deg)` }}
+      onPointerDownCapture={e => {
+        if (sleep.noteInput()) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      }}
+      onClickCapture={e => {
+        // the tap that woke the screen must not also press whatever sits under it
+        if (wokeAt.current && performance.now() - wokeAt.current < 600) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      }}>
       <Backdrop url={dev.artUrl} />
       {view === 'now' ? (
         <NowPlaying dev={dev} scrub={scrub} openLyrics={() => setView('lyrics')} />
@@ -86,6 +118,7 @@ export default function App() {
       <VolumeHud volume={dev.volume} />
       <Toast toast={toast} />
       {dev.conn !== 'open' && <div className="conn">{dev.conn === 'connecting' ? 'connecting…' : 'offline'}</div>}
+      <div className={`sleep ${sleep.asleep ? 'on' : ''}`} aria-hidden={!sleep.asleep} />
     </div>
   );
 }
@@ -126,6 +159,8 @@ function useTick(ms: number) {
 }
 
 type HardwareHandlers = {
+  /** returns true when the input should be swallowed */
+  gate: () => boolean;
   onKey: (key: string) => void;
   onBack: () => void;
   onBackHold: () => void;
@@ -140,7 +175,15 @@ function useHardware(handlers: HardwareHandlers) {
     let holdTimer: ReturnType<typeof setTimeout> | null = null;
     let held = false;
 
+    let swallowedBack = false;
     const down = (e: KeyboardEvent) => {
+      if (e.repeat && swallowedBack) return;
+      // m wakes the screen too, but stays unprevented so the launcher gesture still works
+      if (h.current.gate()) {
+        if (e.key !== 'm') e.preventDefault();
+        swallowedBack = e.key === 'Escape';
+        return;
+      }
       if (e.key === 'Escape') {
         e.preventDefault();
         if (e.repeat || holdTimer) return;
@@ -161,6 +204,10 @@ function useHardware(handlers: HardwareHandlers) {
 
     const up = (e: KeyboardEvent) => {
       if (e.key !== 'Escape') return;
+      if (swallowedBack) {
+        swallowedBack = false;
+        return;
+      }
       if (holdTimer) clearTimeout(holdTimer);
       holdTimer = null;
       if (!held) h.current.onBack();
@@ -176,6 +223,7 @@ function useHardware(handlers: HardwareHandlers) {
       const now = performance.now();
       if (now - lastWheel < 40) return; // collapse duplicate events from one detent
       lastWheel = now;
+      if (h.current.gate()) return;
       h.current.onDial(d > 0 ? 1 : -1);
     };
 

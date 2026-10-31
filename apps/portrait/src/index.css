@@ -530,3 +530,18 @@ button {
   text-transform: uppercase;
   color: var(--color-warn);
 }
+
+/* screen off: the backlight goes to zero too, this just guarantees black if it cannot */
+.sleep {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 600ms ease;
+  z-index: 50;
+}
+.sleep.on {
+  opacity: 1;
+  pointer-events: auto;
+}

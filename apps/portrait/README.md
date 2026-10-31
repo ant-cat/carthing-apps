@@ -25,6 +25,19 @@ the right place because the browser hit-tests through the transform.
   the device until you change this setting again.
 - **Dial turns**: volume, scrub through the track (5 s per click), or skip tracks.
 - **Reverse dial direction**: if clockwise feels backwards.
+- **Screen off when paused**: never, or after 2, 5 (default), 15 or 30 minutes of no music.
+- **Screen off with my laptop** (on by default): dark when your Mac's display sleeps, or 20 seconds after your
+  laptop and phone disconnect; back on when they return.
+
+## Screen off
+
+Portrait turns the Car Thing's backlight all the way down and remembers your brightness so it can put it back.
+The first touch, dial turn or button press only wakes the screen; it never also presses whatever was under it.
+
+Following the Mac's display needs the Bridgething desktop app. Portrait ships a small desktop add-on
+(`extension/main.ts`) that runs one `osascript` loop asking macOS whether the main display is asleep, and tells the
+app when that changes. It only asks permission to run `/usr/bin/osascript`. On a phone, or on Windows and Linux,
+the disconnect and paused triggers still work.
 
 ## Install
 
