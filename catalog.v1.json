@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-10-31T03:17:02.121Z",
+  "updated_at": "2026-10-31T20:44:41.301Z",
   "repo": {
     "name": "carthing-apps",
     "description": "bridgething webapps by ant.cat",
@@ -27,6 +27,29 @@
       "source": "https://github.com/ant-cat/carthing-apps",
       "versions": [
         {
+          "version": "0.2.0",
+          "released_at": "2026-10-31T20:44:41.266Z",
+          "download": {
+            "url": "https://raw.githubusercontent.com/ant-cat/carthing-apps/gh-pages/r/01a18fa7-97d6-7564-84c6-ad1e5386ec77/0.2.0.zip",
+            "size": 949164,
+            "sha256": "7d25068c31e43ffb8cc9d79d1554c65ea3fe429ddba097f9919a54f93c2cbd45"
+          },
+          "settings": {
+            "url": "https://raw.githubusercontent.com/ant-cat/carthing-apps/gh-pages/s/01a18fa7-97d6-7564-84c6-ad1e5386ec77/0.2.0.html",
+            "size": 39605,
+            "sha256": "6439e8d62c09cabf8da3080e64a16245967994281bade56c02e083ab021a2d46"
+          },
+          "permissions": [],
+          "extension": {
+            "desktop": true,
+            "permissions": [
+              "run:/usr/bin/osascript"
+            ]
+          },
+          "min_libbridgething_version": "0.16.0",
+          "changelog": "Screen off with your laptop. The screen goes dark when your Mac's display sleeps (with the Bridgething desktop app),\nwhen your laptop and phone disconnect, or after the music has been paused a while (5 minutes by default). It comes\nback on with your laptop, when music plays, or with any touch, dial turn or button, which only wakes it.\nBoth are in settings. Following the Mac's display uses a small desktop add-on that asks to run osascript."
+        },
+        {
           "version": "0.1.0",
           "released_at": "2026-10-31T03:14:59.479Z",
           "download": {
@@ -40,6 +63,12 @@
             "sha256": "6439e8d62c09cabf8da3080e64a16245967994281bade56c02e083ab021a2d46"
           },
           "permissions": [],
+          "extension": {
+            "desktop": true,
+            "permissions": [
+              "run:/usr/bin/osascript"
+            ]
+          },
           "min_libbridgething_version": "0.16.0",
           "changelog": "First release. A vertical now-playing screen for a Car Thing standing on its side: big art and controls,\nsynced lyrics, dial for volume, scrub or skip, hold back to flip orientation, and its own upright volume bar.\nPlays whatever your phone or desktop is playing."
         }
