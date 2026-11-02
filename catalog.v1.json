@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-10-31T20:44:41.301Z",
+  "updated_at": "2026-11-02T00:57:13.131Z",
   "repo": {
     "name": "carthing-apps",
     "description": "bridgething webapps by ant.cat",
@@ -26,6 +26,29 @@
       "homepage": "https://ant.cat/writing/portrait",
       "source": "https://github.com/ant-cat/carthing-apps",
       "versions": [
+        {
+          "version": "0.2.1",
+          "released_at": "2026-11-02T00:57:13.127Z",
+          "download": {
+            "url": "https://raw.githubusercontent.com/ant-cat/carthing-apps/gh-pages/r/01a18fa7-97d6-7564-84c6-ad1e5386ec77/0.2.1.zip",
+            "size": 950030,
+            "sha256": "4d0796e1a0382a4d5d513b8d20567a0b929d854619cf70279748dbf90921f22e"
+          },
+          "settings": {
+            "url": "https://raw.githubusercontent.com/ant-cat/carthing-apps/gh-pages/s/01a18fa7-97d6-7564-84c6-ad1e5386ec77/0.2.1.html",
+            "size": 39605,
+            "sha256": "6439e8d62c09cabf8da3080e64a16245967994281bade56c02e083ab021a2d46"
+          },
+          "permissions": [],
+          "extension": {
+            "desktop": true,
+            "permissions": [
+              "run:/usr/bin/osascript"
+            ]
+          },
+          "min_libbridgething_version": "0.16.0",
+          "changelog": "The screen now turns off when your Mac goes fully to sleep, like closing the lid with a monitor still powering the\nCar Thing. A sleeping Mac goes silent instead of disconnecting, so the desktop add-on now checks in every 5 seconds\nand Portrait goes dark after 20 seconds without hearing from it, then wakes with the Mac. A song left \"playing\" when\nthe Mac slept no longer keeps the screen on either: once it should have ended, it counts as paused."
+        },
         {
           "version": "0.2.0",
           "released_at": "2026-10-31T20:44:41.266Z",
