@@ -33,6 +33,10 @@ export type Device = {
   laptopAsleep: boolean | null;
   /** companions with a live link, null until the daemon reports peers */
   linked: number | null;
+  /** the desktop add-on was heard from and then went quiet, which is what a sleeping mac looks like */
+  desktopGone: boolean;
+  /** playing per the last snapshot, but the track should have ended long ago with no word since */
+  stalled: () => boolean;
   state: PlayerState | null;
   artUrl: string | null;
   liked: boolean;
@@ -58,6 +62,9 @@ export type Actions = {
 };
 
 const DEFAULTS: Settings = { rotation: 'dial-top', dial: 'volume', invertDial: false, sleepWhenPaused: 5, followLaptop: true };
+const DESKTOP_SILENCE_MS = 20_000;
+// a track that should have ended this long ago with no new snapshot means the source went quiet
+const STALL_MS = 30_000;
 const REPEAT_NEXT: Record<RepeatMode, RepeatMode> = { off: 'all', all: 'one', one: 'off' };
 
 export const isDemo = typeof location !== 'undefined' && new URLSearchParams(location.search).has('demo');
@@ -93,6 +100,8 @@ export function useDevice(): Device {
   const [lyricsWanted, setLyricsWanted] = useState(false);
   const [laptopAsleep, setLaptopAsleep] = useState<boolean | null>(null);
   const [linked, setLinked] = useState<number | null>(null);
+  const lastBeat = useRef<number | null>(null);
+  const [desktopGone, setDesktopGone] = useState(false);
   const receivedAt = useRef(performance.now());
   const demoVolume = useRef(0.6);
 
@@ -123,6 +132,8 @@ export function useDevice(): Device {
       client.forward.onJson(raw => {
         const m = raw as { type?: string; asleep?: unknown; supported?: unknown };
         if (m?.type !== 'display') return;
+        lastBeat.current = Date.now();
+        setDesktopGone(false);
         setLaptopAsleep(m.supported && typeof m.asleep === 'boolean' ? m.asleep : null);
       }),
       client.peer.onSnapshot(peers => {
@@ -194,14 +205,35 @@ export function useDevice(): Device {
     };
   }, [client, lyricsWanted, trackKey, trackUri]);
 
+  // the add-on beats every 5s; three missed beats and a bit means the mac is asleep or gone
+  useEffect(() => {
+    const t = setInterval(() => {
+      if (lastBeat.current !== null && Date.now() - lastBeat.current > DESKTOP_SILENCE_MS) setDesktopGone(true);
+    }, 2_000);
+    return () => clearInterval(t);
+  }, []);
+
   // demo hooks so the screen-off triggers can be driven from devtools or a test
   useEffect(() => {
     if (!isDemo) return;
-    (window as unknown as { __portrait: unknown }).__portrait = { setLaptopAsleep, setLinked };
+    const beat = (asleep: boolean | null = false) => {
+      lastBeat.current = Date.now();
+      setDesktopGone(false);
+      setLaptopAsleep(asleep);
+    };
+    (window as unknown as { __portrait: unknown }).__portrait = { setLaptopAsleep, setLinked, beat };
   }, []);
 
   const stateRef = useRef(state);
   stateRef.current = state;
+
+  const stalled = useCallback(() => {
+    const s = stateRef.current;
+    const dur = s?.track?.durationMs ?? 0;
+    if (!s || s.playback.state !== 'playing' || dur <= 0) return false;
+    const overrun = s.playback.positionMs + (performance.now() - receivedAt.current) - dur;
+    return overrun > STALL_MS;
+  }, []);
 
   const position = useCallback(() => {
     const s = stateRef.current;
@@ -279,6 +311,8 @@ export function useDevice(): Device {
     client,
     laptopAsleep,
     linked,
+    desktopGone,
+    stalled,
     conn,
     state,
     artUrl,

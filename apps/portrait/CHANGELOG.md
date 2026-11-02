@@ -1,5 +1,12 @@
 # portrait
 
+## 0.2.1
+
+The screen now turns off when your Mac goes fully to sleep, like closing the lid with a monitor still powering the
+Car Thing. A sleeping Mac goes silent instead of disconnecting, so the desktop add-on now checks in every 5 seconds
+and Portrait goes dark after 20 seconds without hearing from it, then wakes with the Mac. A song left "playing" when
+the Mac slept no longer keeps the screen on either: once it should have ended, it counts as paused.
+
 ## 0.2.0
 
 Screen off with your laptop. The screen goes dark when your Mac's display sleeps (with the Bridgething desktop app),

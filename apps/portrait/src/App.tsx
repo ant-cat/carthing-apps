@@ -20,10 +20,10 @@ export default function App() {
 
   const sleep = useScreenSleep({
     client: dev.client,
-    playing: dev.state?.playback.state === 'playing',
+    playing: dev.state?.playback.state === 'playing' && !dev.stalled(),
     pausedMinutes: dev.settings.sleepWhenPaused,
     followLaptop: dev.settings.followLaptop,
-    laptopAsleep: dev.laptopAsleep,
+    laptopAsleep: dev.desktopGone ? true : dev.laptopAsleep,
     linked: dev.linked,
   });
 

@@ -1,6 +1,9 @@
 import { asJson, defineExtension, json, type ExtensionContext } from '@bridgething/extension';
 
 const OSASCRIPT = '/usr/bin/osascript';
+// a sleeping mac freezes this process without closing anything, so silence is the only sleep signal the
+// car thing can rely on; the webapp treats a few missed beats as the laptop being gone
+const BEAT_MS = 5_000;
 
 // one long-lived jxa loop instead of a process per poll; it prints only when the state flips.
 // console.log in osascript goes to stderr.
@@ -18,6 +21,7 @@ type DisplayMessage = { type: 'display'; asleep: boolean | null; supported: bool
 let child: Deno.ChildProcess | null = null;
 let stopped = false;
 let asleep: boolean | null = null;
+let beat: ReturnType<typeof setInterval> | undefined;
 
 function message(): DisplayMessage {
   return { type: 'display', asleep, supported: Deno.build.os === 'darwin' };
@@ -71,6 +75,8 @@ defineExtension({
       if (asJson<{ type?: string }>(msg)?.type === 'hello') device.send(json(message()));
     });
 
+    beat = setInterval(() => ctx.broadcast(json(message())), BEAT_MS);
+
     if (Deno.build.os !== 'darwin') {
       ctx.log.info(`display following is mac only; ${Deno.build.os} reports unsupported`);
       return;
@@ -85,6 +91,7 @@ defineExtension({
   },
   stop() {
     stopped = true;
+    clearInterval(beat);
     try {
       child?.kill('SIGTERM');
     } catch {

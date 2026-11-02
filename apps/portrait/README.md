@@ -26,8 +26,9 @@ the right place because the browser hit-tests through the transform.
 - **Dial turns**: volume, scrub through the track (5 s per click), or skip tracks.
 - **Reverse dial direction**: if clockwise feels backwards.
 - **Screen off when paused**: never, or after 2, 5 (default), 15 or 30 minutes of no music.
-- **Screen off with my laptop** (on by default): dark when your Mac's display sleeps, or 20 seconds after your
-  laptop and phone disconnect; back on when they return.
+- **Screen off with my laptop** (on by default): dark when your Mac's display sleeps, when your Mac goes to sleep
+  (20 seconds after the desktop add-on goes quiet), or 20 seconds after your laptop and phone disconnect; back on
+  when they return.
 
 ## Screen off
 
