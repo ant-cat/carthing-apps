@@ -144,40 +144,47 @@ button {
   height: 100%;
   display: flex;
   flex-direction: column;
-  padding: 26px 36px 22px;
   box-sizing: border-box;
 }
+/* the physical dial sits just past one short edge of the screen; keep every control well clear of it */
+.now.dial-bottom {
+  justify-content: flex-start;
+  padding: 22px 36px 0;
+}
+.now.dial-top {
+  justify-content: flex-end;
+  padding: 0 36px 28px;
+}
 
-.now-head {
-  text-align: center;
-  height: 44px;
-}
-.eyebrow {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--color-dim);
-}
-.context {
-  margin-top: 4px;
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--color-near);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
 
 .art {
   display: block;
-  margin: 14px auto 0;
+  margin: 0 auto;
+  touch-action: none;
+  cursor: pointer;
+  transition: transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
   width: 408px;
   height: 408px;
   border-radius: 8px;
   overflow: hidden;
   background: var(--color-screen);
   box-shadow: 0 24px 60px rgb(0 0 0 / 0.55), 0 0 0 1px var(--color-rule);
+}
+.art img,
+.art-empty {
+  pointer-events: none;
+}
+.art.flick-next {
+  animation: flick-next 260ms ease;
+}
+.art.flick-prev {
+  animation: flick-prev 260ms ease;
+}
+@keyframes flick-next {
+  40% { transform: translateX(-28px); opacity: 0.65; }
+}
+@keyframes flick-prev {
+  40% { transform: translateX(28px); opacity: 0.65; }
 }
 .art img {
   width: 100%;
@@ -196,7 +203,7 @@ button {
 }
 
 .meta {
-  margin-top: 24px;
+  margin-top: 14px;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -240,15 +247,19 @@ button {
   transform: scale(0.9);
   background: var(--color-neutral-soft);
 }
-.icon-btn.small {
-  width: 52px;
-  height: 52px;
+.icon-btn.side {
+  width: 56px;
+  height: 56px;
   color: var(--color-dim);
+}
+.icon-btn.skip {
+  width: 76px;
+  height: 76px;
 }
 .icon-btn.on {
   color: var(--color-ok);
 }
-.icon-btn.small.on::after {
+.icon-btn.side.on::after {
   content: '';
   position: absolute;
   bottom: 6px;
@@ -257,11 +268,17 @@ button {
   border-radius: 99px;
   background: currentColor;
 }
-.like {
+.meta-btn {
   flex: none;
-  width: 56px;
-  height: 56px;
+  width: 52px;
+  height: 52px;
+  color: var(--color-soft);
+}
+.like {
   margin-right: -10px;
+}
+.like.on {
+  color: var(--color-ok);
 }
 .badge {
   position: absolute;
@@ -278,7 +295,7 @@ button {
 }
 
 .progress {
-  margin-top: 10px;
+  margin-top: 6px;
 }
 .bar {
   height: 36px;
@@ -324,7 +341,7 @@ button {
 }
 
 .controls {
-  margin-top: 14px;
+  margin-top: 6px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -344,22 +361,6 @@ button {
   transform: scale(0.93);
 }
 
-.lyrics-tab {
-  margin: auto auto 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
-  border-radius: 99px;
-  font: 600 13px var(--font-body);
-  letter-spacing: 0.04em;
-  color: var(--color-soft);
-  background: var(--color-neutral-soft);
-  border: 1px solid var(--color-rule);
-}
-.lyrics-tab:active {
-  background: var(--color-rule-strong);
-}
 
 /* ---------- lyrics ---------- */
 

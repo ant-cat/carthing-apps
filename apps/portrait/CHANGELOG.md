@@ -1,5 +1,12 @@
 # portrait
 
+## 0.3.0
+
+Easier to reach. The controls now keep well clear of the dial: with the dial at the bottom they sit higher on the
+screen, with open space where the knob is, and with the dial at the top they sit lower. Skip buttons are bigger.
+Swipe the album art left for the next song or right for the previous one; a tap still opens lyrics. The
+"Now playing" header is gone to make room, and lyrics moved to a button next to the heart.
+
 ## 0.2.1
 
 The screen now turns off when your Mac goes fully to sleep, like closing the lid with a monitor still powering the

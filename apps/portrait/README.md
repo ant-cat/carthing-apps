@@ -17,7 +17,7 @@ the right place because the browser hit-tests through the transform.
 | Back (hold ~1 s)        | Flip orientation (dial at top ↔ dial at bottom)       |
 | Preset 1 / 2 / 3 / 4    | Previous / play-pause / next / like                   |
 | M                       | Untouched, so your launcher gesture still works       |
-| Touch                   | All on-screen buttons, drag the progress bar, tap the artwork for lyrics, tap a lyric line to jump to it |
+| Touch                   | All on-screen buttons, swipe the art left/right for next/previous, tap the art for lyrics, drag the progress bar, tap a lyric line to jump to it |
 
 ## Settings (companion app → Portrait → settings)
 
