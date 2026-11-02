@@ -1,5 +1,10 @@
 # portrait
 
+## 0.3.1
+
+The heart only shows when the music source can actually like a song. Playing from your Mac without the Spotify
+connection, it no longer shows a heart that does nothing.
+
 ## 0.3.0
 
 Easier to reach. The controls now keep well clear of the dial: with the dial at the bottom they sit higher on the

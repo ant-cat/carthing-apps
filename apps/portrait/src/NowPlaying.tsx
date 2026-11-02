@@ -32,7 +32,7 @@ export function NowPlaying({ dev, scrub, openLyrics }: { dev: Device; scrub: num
         <button className="icon-btn meta-btn" onClick={openLyrics} aria-label="Lyrics">
           <Icon name="lyrics" size={26} />
         </button>
-        {track?.isLikeSupported !== false && track && (
+        {track?.isLikeSupported === true && (
           <button className={`icon-btn meta-btn like ${liked ? 'on' : ''}`} onClick={act.toggleLike} aria-label="Like">
             <Icon name={liked ? 'heartFilled' : 'heart'} size={28} />
           </button>
