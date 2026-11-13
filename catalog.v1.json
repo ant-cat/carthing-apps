@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-11-13T13:56:52.659Z",
+  "updated_at": "2026-11-13T18:02:38.386Z",
   "repo": {
     "name": "carthing-apps",
     "description": "bridgething webapps by ant.cat",
@@ -21,6 +21,35 @@
       "homepage": "https://github.com/ant-cat/carthing-apps",
       "source": "https://github.com/ant-cat/carthing-apps",
       "versions": [
+        {
+          "version": "0.1.1",
+          "released_at": "2026-11-13T18:02:38.380Z",
+          "download": {
+            "url": "https://raw.githubusercontent.com/ant-cat/carthing-apps/gh-pages/r/01a1d531-acd3-70f5-be50-0f989ae184ee/0.1.1.zip",
+            "size": 942214,
+            "sha256": "276342079907885855fd7ed3b1af74735ddd17e9bb04663d197ff83877aea6e7"
+          },
+          "settings": {
+            "url": "https://raw.githubusercontent.com/ant-cat/carthing-apps/gh-pages/s/01a1d531-acd3-70f5-be50-0f989ae184ee/0.1.1.html",
+            "size": 36048,
+            "sha256": "fcb55227d096e952b536f97981963a9e359baefcf1ba0a740632a713aa7a5130"
+          },
+          "permissions": [],
+          "extension": {
+            "desktop": true,
+            "permissions": [
+              "read:~",
+              "write:~",
+              "net:api.anthropic.com",
+              "net:platform.claude.com",
+              "net:127.0.0.1",
+              "run:security",
+              "env"
+            ]
+          },
+          "min_libbridgething_version": "0.17.0",
+          "changelog": "The settings page now has the dial end and invert options."
+        },
         {
           "version": "0.1.0",
           "released_at": "2026-11-13T13:56:52.656Z",
