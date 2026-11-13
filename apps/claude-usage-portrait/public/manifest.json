@@ -1,7 +1,7 @@
 {
   "id": "01a1d531-acd3-70f5-be50-0f989ae184ee",
   "name": "Claude Usage Portrait",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Claude Code limits, machine-wide token history and live sessions on a vertical Car Thing screen. A portrait fork of Joey Eamigh's Claude Usage.",
   "settings": "settings.html",
   "config": [

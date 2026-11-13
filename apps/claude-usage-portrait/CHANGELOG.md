@@ -1,5 +1,9 @@
 # Claude Usage Portrait
 
+## 0.2.0
+
+A mini player along the bottom (art, title, previous, play and pause, next). The front button opens an app picker with home first, so you can switch apps without five Mode presses.
+
 ## 0.1.1
 
 The settings page now has the dial end and invert options.

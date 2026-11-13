@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 
 import { Mascot, moodFor } from './components/Mascot';
+import { AppPicker } from './components/AppPicker';
+import { MiniPlayer } from './components/MiniPlayer';
 import { PromptModal, type Choice } from './components/Prompt';
 import { useLink, useNow } from './link';
 import { AmbientScreen } from './screens/Ambient';
@@ -13,7 +15,9 @@ type Screen = (typeof SCREENS)[number];
 
 const CARD_STRIDE = 488 + 12;
 const ROW_STRIDE = 104;
-const LIST_HEIGHT = 652;
+// the mini player takes the bottom 96px plus a gap; with the dial at the bottom the wheel covers 40px more
+const LIST_HEIGHT = 540;
+const DIAL_COVER = 40;
 const IDLE_TO_AMBIENT_MS = 90_000;
 const PRESENCE_EVERY_MS = 20_000;
 
@@ -32,6 +36,10 @@ export default function App() {
   const [choice, setChoice] = useState<Choice>('allow');
   const lastTouch = useRef(Date.now());
   const lastPresent = useRef(0);
+  const [picker, setPicker] = useState<{ open: boolean; index: number; count: number }>({ open: false, index: 0, count: 0 });
+  const pick = useRef<(() => void) | null>(null);
+  const onCount = useCallback((count: number) => setPicker(at => ({ ...at, count })), []);
+  const closePicker = useCallback(() => setPicker(at => ({ ...at, open: false })), []);
 
   const home = (SCREENS as readonly string[]).includes(link.config.home ?? '') ? (link.config.home as Screen) : 'usage';
   const ambientIdle = link.config.ambientIdle !== 'false';
@@ -40,11 +48,12 @@ export default function App() {
   const flipped = link.config.rotation === 'dial-bottom';
   const dialSign = (link.config.invertDial === 'true') !== flipped ? -1 : 1;
 
+  const listHeight = LIST_HEIGHT - (flipped ? DIAL_COVER : 0);
   const scrollMax =
     current === 'usage'
-      ? Math.max(0, link.accounts.length * CARD_STRIDE - 12 - LIST_HEIGHT)
+      ? Math.max(0, link.accounts.length * CARD_STRIDE - 12 - listHeight)
       : current === 'sessions'
-        ? Math.max(0, link.sessions.length * ROW_STRIDE - 8 - LIST_HEIGHT)
+        ? Math.max(0, link.sessions.length * ROW_STRIDE - 8 - listHeight)
         : 0;
   const [scroll, nudge] = useScroll(current, scrollMax);
 
@@ -75,15 +84,23 @@ export default function App() {
         if (event.key === 'Escape') return setChoice(at => (at === 'allow' ? 'deny' : 'allow'));
         return;
       }
+      if (picker.open) {
+        if (event.key === 'Escape' || event.key === 'm') return closePicker();
+        if (event.key === 'Enter') return pick.current?.();
+        return;
+      }
       const preset = SCREENS[Number(event.key) - 1];
       if (preset) return setScreen(preset);
       if (event.key === 'm') return setScreen(at => SCREENS[(SCREENS.indexOf(at ?? home) + 1) % SCREENS.length]!);
-      if (event.key === 'Escape') return setScreen('usage');
+      if (event.key === 'Escape') return setPicker({ open: true, index: 0, count: picker.count });
       if (event.key === 'r') link.refresh();
     };
     const onWheel = (event: WheelEvent) => {
       touched();
       const dx = event.deltaX * dialSign;
+      if (picker.open && !prompt) {
+        return setPicker(at => ({ ...at, index: Math.max(0, Math.min(at.count - 1, at.index + (dx > 0 ? 1 : dx < 0 ? -1 : 0))) }));
+      }
       if (prompt) return setChoice(dx > 0 ? 'deny' : 'allow');
       nudge(dx * (current === 'usage' ? 1.6 : 1.1));
     };
@@ -97,7 +114,7 @@ export default function App() {
       window.removeEventListener('wheel', onWheel);
       window.removeEventListener('pointerdown', onPointer);
     };
-  }, [choice, current, dialSign, home, link, nudge, prompt, touched]);
+  }, [choice, closePicker, current, dialSign, home, link, nudge, picker, prompt, touched]);
 
   useEffect(() => {
     if (!ambientIdle) return;
@@ -129,7 +146,9 @@ export default function App() {
   }
 
   return stage(
-    <main className="relative flex h-full w-full flex-col bg-bg px-5 py-4 text-off-white">
+    <main
+      className="relative flex h-full w-full flex-col bg-bg px-5 pt-4 text-off-white"
+      style={{ paddingBottom: flipped ? 16 + DIAL_COVER : 16 }}>
       <header className="flex shrink-0 flex-col gap-3 pb-3">
         <div className="flex items-center gap-3">
           <Mascot mood={moodFor(worst)} size={44} />
@@ -170,6 +189,21 @@ export default function App() {
         )}
         {current === 'ambient' && <AmbientScreen accounts={link.accounts} sessions={link.sessions} now={now} />}
       </div>
+
+      <div className="shrink-0 pt-3">
+        <MiniPlayer client={link.client} />
+      </div>
+
+      {picker.open && !prompt && (
+        <AppPicker
+          client={link.client}
+          selfName="Claude Usage Portrait"
+          index={picker.index}
+          onCount={onCount}
+          onClose={closePicker}
+          pickRef={pick}
+        />
+      )}
 
       {prompt && (
         <PromptModal
