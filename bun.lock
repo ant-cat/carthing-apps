@@ -10,9 +10,35 @@
         "typescript": "^6.0.3",
       },
     },
+    "apps/claude-usage-portrait": {
+      "name": "claude-usage-portrait",
+      "version": "0.1.0",
+      "dependencies": {
+        "@bridgething/client": "^0.17.0",
+        "@bridgething/extension": "^0.17.0",
+        "preact": "^11.0.1",
+        "react": "^19.2.0",
+        "react-dom": "^19.2.0",
+      },
+      "devDependencies": {
+        "@msgpack/msgpack": "^3.1.3",
+        "@preact/preset-vite": "^2.10.6",
+        "@tailwindcss/vite": "^4.3.3",
+        "@types/react": "^19.2.10",
+        "@types/react-dom": "^19.2.3",
+        "@vitejs/plugin-react": "^6.1.1",
+        "deno": "2.9.6",
+        "esbuild": "^0.28.2",
+        "fflate": "^0.8.2",
+        "tailwindcss": "^4.3.3",
+        "typescript": "^6.0.3",
+        "vite": "^8.2.2",
+        "vite-plugin-singlefile": "^2.3.3",
+      },
+    },
     "apps/portrait": {
       "name": "portrait",
-      "version": "0.1.0",
+      "version": "0.3.1",
       "dependencies": {
         "@bridgething/client": "^0.16.0",
         "@bridgething/extension": "^0.16.0",
@@ -82,11 +108,11 @@
 
     "@bridgething/catalog": ["@bridgething/catalog@0.15.2", "", { "peerDependencies": { "typescript": "^6.0.3" } }, "sha512-TvxYbpa0uvUTizl9p6nh78ERJv/yeLn+KD2QzluNBCBUMjFlulenfGYVkDq8/azm9yoZQNPXobNRaXlkk7VgHA=="],
 
-    "@bridgething/client": ["@bridgething/client@0.16.0", "", { "dependencies": { "@bridgething/lib": "0.16.0", "@msgpack/msgpack": "^3.1.3" }, "peerDependencies": { "react": ">=18", "typescript": "^6.0.3" }, "optionalPeers": ["react"] }, "sha512-kLDHr9/vZ69FsC4Ldk4O08k1qaFou3jz05WVxBOYTQjOUEGwugqyozWvPdvA7x69vSr4Qzmx/p3NEpypz0YNoA=="],
+    "@bridgething/client": ["@bridgething/client@0.17.0", "", { "dependencies": { "@bridgething/lib": "0.17.0", "@msgpack/msgpack": "^3.1.3" }, "peerDependencies": { "react": ">=18", "typescript": "^6.0.3" }, "optionalPeers": ["react"] }, "sha512-x+2Dx9t2p4ZCrU4AsBYkinWPxH4OX5H8EwTLTfyD49AuCQz1mnN7aadGzAMFGYX4P1SWvTp+W9ZU1gBJ5OBRAw=="],
 
-    "@bridgething/extension": ["@bridgething/extension@0.16.0", "", { "dependencies": { "@bridgething/lib": "0.16.0" }, "peerDependencies": { "typescript": "^6.0.3" } }, "sha512-97JnC5fQ8cpmGQxs4Vr+FQygFcHKQ4cjhad3pMrv8A0fV5yFOmZsPZ1Fka1KvkL+ULaWn3h984CbNnVRQt7UXA=="],
+    "@bridgething/extension": ["@bridgething/extension@0.17.0", "", { "dependencies": { "@bridgething/lib": "0.17.0" }, "peerDependencies": { "typescript": "^6.0.3" } }, "sha512-joWrHQ1PXwypgsyq5jg2xElQ025N73EYRczFc8keHZ1Yz/yXT/8pZ+3BaGpPVXq+lA4gPUl0Umb7Q4Mp5xIxlQ=="],
 
-    "@bridgething/lib": ["@bridgething/lib@0.16.0", "", { "dependencies": { "uuid": "^14.0.0" }, "peerDependencies": { "typescript": "^6.0.3" } }, "sha512-aNJquMNXIfJiJjS7NxBuOC5W/RTeK84C4Vg+8at1ujSg/2DujGRaudsqeoirxyDmbSJc7i6erj5/s2F+gaeaxg=="],
+    "@bridgething/lib": ["@bridgething/lib@0.17.0", "", { "dependencies": { "uuid": "^14.0.0" }, "peerDependencies": { "typescript": "^6.0.3" } }, "sha512-r28LfCGh149vckhg4oeDrH9WSy3jfs/w1NRSEay4Qe+XvZclxu32IyCSh65buuKeRK0kyDmE8MegT+2OPR4TNA=="],
 
     "@bridgething/source": ["@bridgething/source@0.15.2", "", { "dependencies": { "@bridgething/catalog": "0.15.2" }, "peerDependencies": { "typescript": "^6.0.3" }, "bin": { "bridgething-source": "dist/cli.js" } }, "sha512-zqnC7doQgLhRXTYB7MiZEoQf3cP+lpHoUxFnoaMTuIR/u4FRRFNtO4pvqjia5850d7hf+3PqcTsiFGS89mjg1w=="],
 
@@ -260,6 +286,8 @@
 
     "caniuse-lite": ["caniuse-lite@1.0.30001820", "", {}, "sha512-gfWD6MxqVCqAOwmODfZf7DchWvlrA+SRdNX7ceLfg3xRqe5ssjjpF7EgslC/0tiLiNTajdaNN/q8c/5u/7Gz8w=="],
 
+    "claude-usage-portrait": ["claude-usage-portrait@workspace:apps/claude-usage-portrait"],
+
     "convert-source-map": ["convert-source-map@2.0.0", "", {}, "sha512-Kvp459HrV2FEJ1CAsi1Ku+MY3kasH19TFykTz2xWmMeq6bk2NU3XXvfJ+Q61m0xktWwt+1HSYf3JZsTms3aRJg=="],
 
     "css-select": ["css-select@5.2.2", "", { "dependencies": { "boolbase": "^1.0.0", "css-what": "^6.1.0", "domhandler": "^5.0.2", "domutils": "^3.0.1", "nth-check": "^2.0.1" } }, "sha512-TizTzUddG/xYLA3NXodFM0fSbNizXjOKhqiQQwvhlspadZokn1KDy0NZFS0wuEubIYAV5/c1/lAr0TaaFXEXzw=="],
@@ -422,6 +450,10 @@
 
     "@tailwindcss/oxide-wasm32-wasi/tslib": ["tslib@2.9.1", "", { "bundled": true }, "sha512-a4Ux9VKuIMHsOS7ENbEq6hK2ZGYIT27Rtl0E4eD9KqwxhKiQeMZE/9xb3IdYwWaSOyIBQLExhQgXDTYoiCxnWA=="],
 
+    "portrait/@bridgething/client": ["@bridgething/client@0.16.0", "", { "dependencies": { "@bridgething/lib": "0.16.0", "@msgpack/msgpack": "^3.1.3" }, "peerDependencies": { "react": ">=18", "typescript": "^6.0.3" }, "optionalPeers": ["react"] }, "sha512-kLDHr9/vZ69FsC4Ldk4O08k1qaFou3jz05WVxBOYTQjOUEGwugqyozWvPdvA7x69vSr4Qzmx/p3NEpypz0YNoA=="],
+
+    "portrait/@bridgething/extension": ["@bridgething/extension@0.16.0", "", { "dependencies": { "@bridgething/lib": "0.16.0" }, "peerDependencies": { "typescript": "^6.0.3" } }, "sha512-97JnC5fQ8cpmGQxs4Vr+FQygFcHKQ4cjhad3pMrv8A0fV5yFOmZsPZ1Fka1KvkL+ULaWn3h984CbNnVRQt7UXA=="],
+
     "@prefresh/vite/@rollup/pluginutils/picomatch": ["picomatch@2.3.2", "", {}, "sha512-V7+vQEJ06Z+c5tSye8S+nHUfI51xoXIXjHQ99cQtKUkQqqO1kO/KCJUfZXuB47h/YBlDhah2H3hdUGXn8ie0oA=="],
 
     "@tailwindcss/node/lightningcss/lightningcss-android-arm64": ["lightningcss-android-arm64@1.32.0", "", { "os": "android", "cpu": "arm64" }, "sha512-YK7/ClTt4kAK0vo6w3X+Pnm0D2cf2vPHbhOXdoNti1Ga0al1P4TBZhwjATvjNwLEBCnKvjJc2jQgHXH0NEwlAg=="],
@@ -445,5 +477,9 @@
     "@tailwindcss/node/lightningcss/lightningcss-win32-arm64-msvc": ["lightningcss-win32-arm64-msvc@1.32.0", "", { "os": "win32", "cpu": "arm64" }, "sha512-8SbC8BR40pS6baCM8sbtYDSwEVQd4JlFTOlaD3gWGHfThTcABnNDBda6eTZeqbofalIJhFx0qKzgHJmcPTnGdw=="],
 
     "@tailwindcss/node/lightningcss/lightningcss-win32-x64-msvc": ["lightningcss-win32-x64-msvc@1.32.0", "", { "os": "win32", "cpu": "x64" }, "sha512-Amq9B/SoZYdDi1kFrojnoqPLxYhQ4Wo5XiL8EVJrVsB8ARoC1PWW6VGtT0WKCemjy8aC+louJnjS7U18x3b06Q=="],
+
+    "portrait/@bridgething/client/@bridgething/lib": ["@bridgething/lib@0.16.0", "", { "dependencies": { "uuid": "^14.0.0" }, "peerDependencies": { "typescript": "^6.0.3" } }, "sha512-aNJquMNXIfJiJjS7NxBuOC5W/RTeK84C4Vg+8at1ujSg/2DujGRaudsqeoirxyDmbSJc7i6erj5/s2F+gaeaxg=="],
+
+    "portrait/@bridgething/extension/@bridgething/lib": ["@bridgething/lib@0.16.0", "", { "dependencies": { "uuid": "^14.0.0" }, "peerDependencies": { "typescript": "^6.0.3" } }, "sha512-aNJquMNXIfJiJjS7NxBuOC5W/RTeK84C4Vg+8at1ujSg/2DujGRaudsqeoirxyDmbSJc7i6erj5/s2F+gaeaxg=="],
   }
 }

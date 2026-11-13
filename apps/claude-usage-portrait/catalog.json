@@ -1,0 +1,11 @@
+{
+  "author": "ant.cat",
+  "homepage": "https://github.com/ant-cat/carthing-apps",
+  "source": "https://github.com/ant-cat/carthing-apps",
+  "icon": null,
+  "screenshots": [],
+  "categories": [
+    "dashboards"
+  ],
+  "min_libbridgething_version": "0.17.0"
+}
