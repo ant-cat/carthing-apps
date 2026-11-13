@@ -37,6 +37,8 @@ function Settings() {
   const [poll, setPoll] = useState('120');
   const [home, setHome] = useState('usage');
   const [ambientIdle, setAmbientIdle] = useState(true);
+  const [rotation, setRotation] = useState('dial-top');
+  const [invertDial, setInvertDial] = useState(false);
   const [manual, setManual] = useState('');
   const [hooks, setHooks] = useState(false);
   const [hookTools, setHookTools] = useState('Bash|Write|Edit|NotebookEdit');
@@ -58,6 +60,8 @@ function Settings() {
         setPoll(values.pollSeconds || '120');
         setHome(values.home || 'usage');
         setAmbientIdle(values.ambientIdle !== 'false');
+        setRotation(values.rotation === 'dial-bottom' ? 'dial-bottom' : 'dial-top');
+        setInvertDial(values.invertDial === 'true');
         setHooks(values.hooks === 'true');
         setHookTools(values.hookTools || 'Bash|Write|Edit|NotebookEdit');
         setHookSeconds(values.hookSeconds || '25');
@@ -123,6 +127,8 @@ function Settings() {
       await settings.config.set('pollSeconds', poll);
       await settings.config.set('home', home);
       await settings.config.set('ambientIdle', ambientIdle ? 'true' : 'false');
+      await settings.config.set('rotation', rotation);
+      await settings.config.set('invertDial', invertDial ? 'true' : 'false');
       await settings.config.set('hooks', hooks ? 'true' : 'false');
       await settings.config.set('hookTools', hookTools);
       await settings.config.set('hookSeconds', hookSeconds);
@@ -241,6 +247,26 @@ function Settings() {
             ))}
           </select>
         </div>
+
+        <div className="field">
+          <label htmlFor="rotation">Which end the dial is on</label>
+          <select
+            id="rotation"
+            value={rotation}
+            onInput={event => setRotation((event.target as HTMLSelectElement).value)}>
+            <option value="dial-top">dial-top (buttons and wheel at the top)</option>
+            <option value="dial-bottom">dial-bottom (buttons and wheel at the bottom)</option>
+          </select>
+        </div>
+
+        <label className="toggle">
+          <input
+            type="checkbox"
+            checked={invertDial}
+            onChange={event => setInvertDial((event.target as HTMLInputElement).checked)}
+          />
+          <span>Invert the dial scroll direction.</span>
+        </label>
 
         <label className="toggle">
           <input
