@@ -59,13 +59,18 @@ const PATHS = {
 
 function Glyph({ name }: { name: keyof typeof PATHS }) {
   return (
-    <svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor" aria-hidden>
+    <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden>
       <path d={PATHS[name]} />
     </svg>
   );
 }
 
-const BUTTON = 'flex h-14 w-14 shrink-0 items-center justify-center border border-edge text-off-white active:bg-accent active:text-screen';
+const BUTTON =
+  'flex h-12 flex-1 items-center justify-center border border-edge text-off-white active:bg-accent active:text-screen';
+
+export function togglePlayback(client: BridgethingClient, playing: boolean) {
+  void (playing ? client.player.pause() : client.player.resume());
+}
 
 export function MiniPlayer({ client, player }: { client: BridgethingClient; player: Player }) {
   const { state, art, playing, visible } = player;
@@ -73,26 +78,30 @@ export function MiniPlayer({ client, player }: { client: BridgethingClient; play
   if (!visible) return null;
 
   return (
-    <div className="flex h-24 shrink-0 items-center gap-3 border border-rule bg-screen p-3">
-      <div className="h-[72px] w-[72px] shrink-0 bg-neutral-soft">
+    <div className="flex h-32 shrink-0 items-center gap-3 border border-rule bg-screen p-3">
+      <div className="h-[104px] w-[104px] shrink-0 bg-neutral-soft">
         {art && <img src={art} alt="" className="h-full w-full object-cover" />}
       </div>
-      <div className="min-w-0 flex-1">
-        <div className="truncate font-display text-row-lg tracking-tight-1">{track?.title}</div>
-        {track?.artist && <div className="truncate font-mono text-eyebrow text-dim">{track.artist}</div>}
+      <div className="flex min-w-0 flex-1 flex-col gap-2">
+        <div className="min-w-0">
+          <div className="truncate font-display text-title tracking-tight-1">{track?.title}</div>
+          {track?.artist && <div className="truncate font-mono text-hint text-dim">{track.artist}</div>}
+        </div>
+        <div className="flex gap-2">
+          <button
+            className={BUTTON}
+            aria-label="Previous"
+            onClick={() => void client.player.skipPrev({ allowSeeking: true })}>
+            <Glyph name="prev" />
+          </button>
+          <button className={BUTTON} aria-label={playing ? 'Pause' : 'Play'} onClick={() => togglePlayback(client, playing)}>
+            <Glyph name={playing ? 'pause' : 'play'} />
+          </button>
+          <button className={BUTTON} aria-label="Next" onClick={() => void client.player.skipNext()}>
+            <Glyph name="next" />
+          </button>
+        </div>
       </div>
-      <button className={BUTTON} aria-label="Previous" onClick={() => void client.player.skipPrev({ allowSeeking: true })}>
-        <Glyph name="prev" />
-      </button>
-      <button
-        className={BUTTON}
-        aria-label={playing ? 'Pause' : 'Play'}
-        onClick={() => void (playing ? client.player.pause() : client.player.resume())}>
-        <Glyph name={playing ? 'pause' : 'play'} />
-      </button>
-      <button className={BUTTON} aria-label="Next" onClick={() => void client.player.skipNext()}>
-        <Glyph name="next" />
-      </button>
     </div>
   );
 }

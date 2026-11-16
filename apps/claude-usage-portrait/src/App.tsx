@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } fro
 
 import { Mascot, moodFor } from './components/Mascot';
 import { AppPicker } from './components/AppPicker';
-import { MiniPlayer, usePlayer } from './components/MiniPlayer';
+import { MiniPlayer, togglePlayback, usePlayer } from './components/MiniPlayer';
 import { PromptModal, type Choice } from './components/Prompt';
 import { useLink, useNow } from './link';
 import { AmbientScreen } from './screens/Ambient';
@@ -15,9 +15,9 @@ type Screen = (typeof SCREENS)[number];
 
 const CARD_STRIDE = 488 + 12;
 const ROW_STRIDE = 104;
-// the mini player takes the bottom 96px plus a gap when it shows; with the dial at the bottom the wheel covers 40px more
+// the mini player takes the bottom 128px plus a gap when it shows; with the dial at the bottom the wheel covers 40px more
 const LIST_HEIGHT = 700;
-const PLAYER_SPACE = 108;
+const PLAYER_SPACE = 140;
 const DIAL_COVER = 40;
 // one dial turn often fires a burst of wheel events, so page flips are spaced out
 const FLIP_GAP_MS = 260;
@@ -126,6 +126,7 @@ export default function App() {
       if (preset) return setScreen(preset);
       if (event.key === 'm') return setScreen(at => SCREENS[(SCREENS.indexOf(at ?? home) + 1) % SCREENS.length]!);
       if (event.key === 'Escape') return setPicker({ open: true, index: 0, count: picker.count });
+      if (event.key === 'Enter') return togglePlayback(link.client, player.playing);
       if (event.key === 'r') link.refresh();
     };
     const onWheel = (event: WheelEvent) => {
@@ -155,7 +156,7 @@ export default function App() {
       window.removeEventListener('wheel', onWheel);
       window.removeEventListener('pointerdown', onPointer);
     };
-  }, [choice, closePicker, current, dialSign, home, link, nudge, picker, prompt, scroll, scrollMax, touched]);
+  }, [choice, closePicker, current, dialSign, home, link, nudge, picker, player.playing, prompt, scroll, scrollMax, touched]);
 
   useEffect(() => {
     if (!ambientIdle) return;

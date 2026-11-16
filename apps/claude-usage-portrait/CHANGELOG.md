@@ -2,7 +2,7 @@
 
 ## 0.3.0
 
-A calmer usage screen. Your weekly limit is one big number, the account email is gone in favour of a plan badge, the status line is one dot and one word, the four tabs are page dots you turn with the dial, and old readings dim instead of shouting. The player bar only shows while something is playing.
+A calmer usage screen. Your weekly limit is one big number, the account email is gone in favour of a plan badge, the status line is one dot and one word, the four tabs are page dots you turn with the dial, and old readings dim instead of shouting. The player bar is bigger and only shows while something is playing, and pressing the dial plays or pauses.
 
 ## 0.2.0
 
