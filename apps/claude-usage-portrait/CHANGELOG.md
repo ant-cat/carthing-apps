@@ -1,5 +1,9 @@
 # Claude Usage Portrait
 
+## 0.3.0
+
+A calmer usage screen. Your weekly limit is one big number, the account email is gone in favour of a plan badge, the status line is one dot and one word, the four tabs are page dots you turn with the dial, and old readings dim instead of shouting. The player bar only shows while something is playing.
+
 ## 0.2.0
 
 A mini player along the bottom (art, title, previous, play and pause, next). The front button opens an app picker with home first, so you can switch apps without five Mode presses.

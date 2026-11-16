@@ -1,7 +1,12 @@
 import type { BridgethingClient, PlayerState } from '@bridgething/client';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-function usePlayer(client: BridgethingClient) {
+// a paused track stays up for a while so it can be resumed, then the bar gives its space back
+const PAUSED_GRACE_MS = 5 * 60_000;
+
+export type Player = ReturnType<typeof usePlayer>;
+
+export function usePlayer(client: BridgethingClient) {
   const [state, setState] = useState<PlayerState | null>(null);
   const [art, setArt] = useState<string | null>(null);
 
@@ -28,7 +33,21 @@ function usePlayer(client: BridgethingClient) {
     };
   }, [client, artworkId]);
 
-  return { state, art };
+  const lastPlaying = useRef<number | null>(null);
+  const [, tick] = useState(0);
+  const playing = state?.playback.state === 'playing';
+  if (playing) lastPlaying.current = Date.now();
+
+  useEffect(() => {
+    if (playing || lastPlaying.current === null) return;
+    const timer = setTimeout(() => tick(at => at + 1), PAUSED_GRACE_MS);
+    return () => clearTimeout(timer);
+  }, [playing]);
+
+  const recent = lastPlaying.current !== null && Date.now() - lastPlaying.current < PAUSED_GRACE_MS;
+  const visible = Boolean(state?.track) && (playing || (state?.playback.state === 'paused' && recent));
+
+  return { state, art, playing, visible };
 }
 
 const PATHS = {
@@ -48,10 +67,10 @@ function Glyph({ name }: { name: keyof typeof PATHS }) {
 
 const BUTTON = 'flex h-14 w-14 shrink-0 items-center justify-center border border-edge text-off-white active:bg-accent active:text-screen';
 
-export function MiniPlayer({ client }: { client: BridgethingClient }) {
-  const { state, art } = usePlayer(client);
+export function MiniPlayer({ client, player }: { client: BridgethingClient; player: Player }) {
+  const { state, art, playing, visible } = player;
   const track = state?.track ?? null;
-  const playing = state?.playback.state === 'playing';
+  if (!visible) return null;
 
   return (
     <div className="flex h-24 shrink-0 items-center gap-3 border border-rule bg-screen p-3">
@@ -59,8 +78,8 @@ export function MiniPlayer({ client }: { client: BridgethingClient }) {
         {art && <img src={art} alt="" className="h-full w-full object-cover" />}
       </div>
       <div className="min-w-0 flex-1">
-        <div className="truncate font-display text-row-lg tracking-tight-1">{track?.title ?? 'Nothing playing'}</div>
-        <div className="truncate font-mono text-eyebrow text-dim">{track?.artist ?? 'no phone or desktop player'}</div>
+        <div className="truncate font-display text-row-lg tracking-tight-1">{track?.title}</div>
+        {track?.artist && <div className="truncate font-mono text-eyebrow text-dim">{track.artist}</div>}
       </div>
       <button className={BUTTON} aria-label="Previous" onClick={() => void client.player.skipPrev({ allowSeeking: true })}>
         <Glyph name="prev" />
