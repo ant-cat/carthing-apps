@@ -1,8 +1,12 @@
-# **SOURCE_NAME**
+# carthing-apps
 
-**SOURCE_DESCRIPTION**
+Webapps I build for the Spotify Car Thing running [bridgething](https://bridgething.com). Install them from the
+bridgething store in the companion app, or add this source there by pasting
+`https://raw.githubusercontent.com/ant-cat/carthing-apps/gh-pages/catalog.v1.json`.
 
-Webapps for the Spotify Car Thing running [bridgething](https://bridgething.com).
+- **Portrait**: a vertical now-playing screen with synced lyrics, for a Car Thing standing on its side.
+- **Claude Usage Portrait**: Claude Code limits, token history and live sessions on a vertical screen. A portrait
+  fork of Joey Eamigh's Claude Usage.
 
 ## First run
 
