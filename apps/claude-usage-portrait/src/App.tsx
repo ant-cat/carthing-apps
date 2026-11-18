@@ -51,11 +51,19 @@ interface Status {
 }
 
 // one word for the whole link, most urgent first
-function statusFor(at: { waiting: number; hasHost: boolean; hookDown: boolean; reading: boolean; stale: boolean }): Status {
+function statusFor(at: {
+  waiting: number;
+  hasHost: boolean;
+  hookDown: boolean;
+  reading: boolean;
+  stale: boolean;
+  unread: boolean;
+}): Status {
   if (at.waiting > 0) return { word: `${at.waiting} waiting`, dot: 'bg-warn', pulse: true };
   if (!at.hasHost) return { word: 'offline', dot: 'bg-dim' };
   if (at.hookDown) return { word: 'hook off', dot: 'bg-warn' };
   if (at.reading) return { word: 'reading', dot: 'bg-accent', pulse: true };
+  if (at.unread) return { word: 'starting', dot: 'bg-dim' };
   if (at.stale) return { word: 'stale', dot: 'bg-dim' };
   return { word: 'live', dot: 'bg-ok' };
 }
@@ -67,7 +75,11 @@ export default function App() {
   const [choice, setChoice] = useState<Choice>('allow');
   const lastTouch = useRef(Date.now());
   const lastPresent = useRef(0);
-  const [picker, setPicker] = useState<{ open: boolean; index: number; count: number }>({ open: false, index: 0, count: 0 });
+  const [picker, setPicker] = useState<{ open: boolean; index: number; count: number }>({
+    open: false,
+    index: 0,
+    count: 0,
+  });
   const pick = useRef<(() => void) | null>(null);
   const onCount = useCallback((count: number) => setPicker(at => ({ ...at, count })), []);
   const closePicker = useCallback(() => setPicker(at => ({ ...at, open: false })), []);
@@ -133,7 +145,10 @@ export default function App() {
       touched();
       const dx = event.deltaX * dialSign;
       if (picker.open && !prompt) {
-        return setPicker(at => ({ ...at, index: Math.max(0, Math.min(at.count - 1, at.index + (dx > 0 ? 1 : dx < 0 ? -1 : 0))) }));
+        return setPicker(at => ({
+          ...at,
+          index: Math.max(0, Math.min(at.count - 1, at.index + (dx > 0 ? 1 : dx < 0 ? -1 : 0))),
+        }));
       }
       if (prompt) return setChoice(dx > 0 ? 'deny' : 'allow');
       if (dx === 0) return;
@@ -156,7 +171,21 @@ export default function App() {
       window.removeEventListener('wheel', onWheel);
       window.removeEventListener('pointerdown', onPointer);
     };
-  }, [choice, closePicker, current, dialSign, home, link, nudge, picker, player.playing, prompt, scroll, scrollMax, touched]);
+  }, [
+    choice,
+    closePicker,
+    current,
+    dialSign,
+    home,
+    link,
+    nudge,
+    picker,
+    player.playing,
+    prompt,
+    scroll,
+    scrollMax,
+    touched,
+  ]);
 
   useEffect(() => {
     if (!ambientIdle) return;
@@ -178,6 +207,7 @@ export default function App() {
     hookDown: Boolean(link.hook?.enabled && !link.hook.listening),
     reading: link.polling,
     stale: link.accounts.some(account => account.stale !== null),
+    unread: link.accounts.length > 0 && link.accounts.every(account => account.readingAt === null),
   });
 
   const stage = (children: ReactNode) => (
