@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } fro
 
 import { Mascot, moodFor } from './components/Mascot';
 import { AppPicker } from './components/AppPicker';
-import { MiniPlayer } from './components/MiniPlayer';
+import { MiniPlayer, togglePlayback, usePlayer } from './components/MiniPlayer';
 import { PromptModal, type Choice } from './components/Prompt';
 import { useLink, useNow } from './link';
 import { AmbientScreen } from './screens/Ambient';
@@ -15,9 +15,12 @@ type Screen = (typeof SCREENS)[number];
 
 const CARD_STRIDE = 488 + 12;
 const ROW_STRIDE = 104;
-// the mini player takes the bottom 96px plus a gap; with the dial at the bottom the wheel covers 40px more
-const LIST_HEIGHT = 540;
+// the mini player takes the bottom 128px plus a gap when it shows; with the dial at the bottom the wheel covers 40px more
+const LIST_HEIGHT = 700;
+const PLAYER_SPACE = 140;
 const DIAL_COVER = 40;
+// one dial turn often fires a burst of wheel events, so page flips are spaced out
+const FLIP_GAP_MS = 260;
 const IDLE_TO_AMBIENT_MS = 90_000;
 const PRESENCE_EVERY_MS = 20_000;
 
@@ -29,6 +32,42 @@ function useScroll(screen: Screen, max: number): [number, (delta: number) => voi
   return [scroll, nudge];
 }
 
+function PageDots({ current, onPick }: { current: Screen; onPick: (screen: Screen) => void }) {
+  return (
+    <nav className="-mx-1.5 flex items-center">
+      {SCREENS.map(name => (
+        <button key={name} aria-label={name} onClick={() => onPick(name)} className="flex h-4 items-center px-1.5">
+          <span className={`h-1.5 transition-all ${current === name ? 'w-4 bg-accent' : 'w-1.5 bg-edge'}`} />
+        </button>
+      ))}
+    </nav>
+  );
+}
+
+interface Status {
+  word: string;
+  dot: string;
+  pulse?: boolean;
+}
+
+// one word for the whole link, most urgent first
+function statusFor(at: {
+  waiting: number;
+  hasHost: boolean;
+  hookDown: boolean;
+  reading: boolean;
+  stale: boolean;
+  unread: boolean;
+}): Status {
+  if (at.waiting > 0) return { word: `${at.waiting} waiting`, dot: 'bg-warn', pulse: true };
+  if (!at.hasHost) return { word: 'offline', dot: 'bg-dim' };
+  if (at.hookDown) return { word: 'hook off', dot: 'bg-warn' };
+  if (at.reading) return { word: 'reading', dot: 'bg-accent', pulse: true };
+  if (at.unread) return { word: 'starting', dot: 'bg-dim' };
+  if (at.stale) return { word: 'stale', dot: 'bg-dim' };
+  return { word: 'live', dot: 'bg-ok' };
+}
+
 export default function App() {
   const link = useLink();
   const now = useNow(link.offsetMs);
@@ -36,7 +75,11 @@ export default function App() {
   const [choice, setChoice] = useState<Choice>('allow');
   const lastTouch = useRef(Date.now());
   const lastPresent = useRef(0);
-  const [picker, setPicker] = useState<{ open: boolean; index: number; count: number }>({ open: false, index: 0, count: 0 });
+  const [picker, setPicker] = useState<{ open: boolean; index: number; count: number }>({
+    open: false,
+    index: 0,
+    count: 0,
+  });
   const pick = useRef<(() => void) | null>(null);
   const onCount = useCallback((count: number) => setPicker(at => ({ ...at, count })), []);
   const closePicker = useCallback(() => setPicker(at => ({ ...at, open: false })), []);
@@ -48,7 +91,8 @@ export default function App() {
   const flipped = link.config.rotation === 'dial-bottom';
   const dialSign = (link.config.invertDial === 'true') !== flipped ? -1 : 1;
 
-  const listHeight = LIST_HEIGHT - (flipped ? DIAL_COVER : 0);
+  const player = usePlayer(link.client);
+  const listHeight = LIST_HEIGHT - (flipped ? DIAL_COVER : 0) - (player.visible ? PLAYER_SPACE : 0);
   const scrollMax =
     current === 'usage'
       ? Math.max(0, link.accounts.length * CARD_STRIDE - 12 - listHeight)
@@ -56,6 +100,7 @@ export default function App() {
         ? Math.max(0, link.sessions.length * ROW_STRIDE - 8 - listHeight)
         : 0;
   const [scroll, nudge] = useScroll(current, scrollMax);
+  const lastFlip = useRef(0);
 
   const touched = useCallback(() => {
     lastTouch.current = Date.now();
@@ -93,16 +138,28 @@ export default function App() {
       if (preset) return setScreen(preset);
       if (event.key === 'm') return setScreen(at => SCREENS[(SCREENS.indexOf(at ?? home) + 1) % SCREENS.length]!);
       if (event.key === 'Escape') return setPicker({ open: true, index: 0, count: picker.count });
+      if (event.key === 'Enter') return togglePlayback(link.client, player.playing);
       if (event.key === 'r') link.refresh();
     };
     const onWheel = (event: WheelEvent) => {
       touched();
       const dx = event.deltaX * dialSign;
       if (picker.open && !prompt) {
-        return setPicker(at => ({ ...at, index: Math.max(0, Math.min(at.count - 1, at.index + (dx > 0 ? 1 : dx < 0 ? -1 : 0))) }));
+        return setPicker(at => ({
+          ...at,
+          index: Math.max(0, Math.min(at.count - 1, at.index + (dx > 0 ? 1 : dx < 0 ? -1 : 0))),
+        }));
       }
       if (prompt) return setChoice(dx > 0 ? 'deny' : 'allow');
-      nudge(dx * (current === 'usage' ? 1.6 : 1.1));
+      if (dx === 0) return;
+      if (current === 'ambient') return setScreen(home);
+      // the dial scrolls a long list first and turns the page once it hits the end
+      const atEdge = dx > 0 ? scroll >= scrollMax : scroll <= 0;
+      if (!atEdge) return nudge(dx * (current === 'usage' ? 1.6 : 1.1));
+      if (Date.now() - lastFlip.current < FLIP_GAP_MS) return;
+      lastFlip.current = Date.now();
+      const step = dx > 0 ? 1 : -1;
+      setScreen(at => SCREENS[(SCREENS.indexOf(at ?? home) + step + SCREENS.length) % SCREENS.length]!);
     };
     const onPointer = () => touched();
 
@@ -114,7 +171,21 @@ export default function App() {
       window.removeEventListener('wheel', onWheel);
       window.removeEventListener('pointerdown', onPointer);
     };
-  }, [choice, closePicker, current, dialSign, home, link, nudge, picker, prompt, touched]);
+  }, [
+    choice,
+    closePicker,
+    current,
+    dialSign,
+    home,
+    link,
+    nudge,
+    picker,
+    player.playing,
+    prompt,
+    scroll,
+    scrollMax,
+    touched,
+  ]);
 
   useEffect(() => {
     if (!ambientIdle) return;
@@ -130,6 +201,14 @@ export default function App() {
   }, [link.accounts]);
 
   const waiting = link.sessions.filter(session => session.status === 'waiting').length;
+  const status = statusFor({
+    waiting,
+    hasHost: link.hasExtension,
+    hookDown: Boolean(link.hook?.enabled && !link.hook.listening),
+    reading: link.polling,
+    stale: link.accounts.some(account => account.stale !== null),
+    unread: link.accounts.length > 0 && link.accounts.every(account => account.readingAt === null),
+  });
 
   const stage = (children: ReactNode) => (
     <div className="stage" style={{ transform: `translate(-50%, -50%) rotate(${flipped ? -90 : 90}deg)` }}>
@@ -149,34 +228,16 @@ export default function App() {
     <main
       className="relative flex h-full w-full flex-col bg-bg px-5 pt-4 text-off-white"
       style={{ paddingBottom: flipped ? 16 + DIAL_COVER : 16 }}>
-      <header className="flex shrink-0 flex-col gap-3 pb-3">
-        <div className="flex items-center gap-3">
-          <Mascot mood={moodFor(worst)} size={44} />
-          <div className="ml-auto flex flex-wrap items-center justify-end gap-x-4 font-mono text-eyebrow">
-            {waiting > 0 && <span className="text-warn">{waiting} waiting</span>}
-            {link.hook?.enabled && (
-              <span className={link.hook.listening ? 'text-ok' : 'text-err'}>
-                {link.hook.listening ? 'dial answers' : 'hook down'}
-              </span>
-            )}
-            {!link.hasExtension && <span className="text-warn">no host</span>}
-            <span className={link.polling ? 'text-accent' : 'text-dim'}>{link.polling ? 'reading' : 'idle'}</span>
-          </div>
+      <header className="flex h-11 shrink-0 items-center gap-3 mb-3">
+        <Mascot mood={moodFor(worst)} size={44} />
+        <div className="flex flex-col gap-1.5">
+          <span className="font-mono text-eyebrow tracking-[0.16em] text-soft uppercase">{current}</span>
+          <PageDots current={current} onPick={go} />
         </div>
-
-        <nav className="grid grid-cols-4 gap-1">
-          {SCREENS.map((name, index) => (
-            <button
-              key={name}
-              onClick={() => go(name)}
-              className={`border py-2.5 font-mono text-hint tracking-[0.12em] uppercase transition ${
-                current === name ? 'border-accent bg-accent text-screen' : 'border-edge text-soft'
-              }`}>
-              <span className="mr-1.5 opacity-50">{index + 1}</span>
-              {name}
-            </button>
-          ))}
-        </nav>
+        <span className="ml-auto flex items-center gap-2 font-mono text-eyebrow text-soft">
+          <span className={`h-2 w-2 rounded-full ${status.dot} ${status.pulse ? 'pulse-soft' : ''}`} />
+          {status.word}
+        </span>
       </header>
 
       <div className="min-h-0 flex-1">
@@ -190,9 +251,11 @@ export default function App() {
         {current === 'ambient' && <AmbientScreen accounts={link.accounts} sessions={link.sessions} now={now} />}
       </div>
 
-      <div className="shrink-0 pt-3">
-        <MiniPlayer client={link.client} />
-      </div>
+      {player.visible && (
+        <div className="shrink-0 pt-3">
+          <MiniPlayer client={link.client} player={player} />
+        </div>
+      )}
 
       {picker.open && !prompt && (
         <AppPicker
