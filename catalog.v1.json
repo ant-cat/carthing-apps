@@ -1,7 +1,7 @@
 {
   "$schema": "https://apps.bridgething.com/schemas/catalog/v1.json",
   "schema": "catalog.v1",
-  "updated_at": "2026-11-13T19:19:38.019Z",
+  "updated_at": "2026-11-21T12:08:16.903Z",
   "repo": {
     "name": "carthing-apps",
     "description": "bridgething webapps by ant.cat",
@@ -21,6 +21,35 @@
       "homepage": "https://github.com/ant-cat/carthing-apps",
       "source": "https://github.com/ant-cat/carthing-apps",
       "versions": [
+        {
+          "version": "0.3.0",
+          "released_at": "2026-11-21T12:08:16.875Z",
+          "download": {
+            "url": "https://raw.githubusercontent.com/ant-cat/carthing-apps/gh-pages/r/01a1d531-acd3-70f5-be50-0f989ae184ee/0.3.0.zip",
+            "size": 950567,
+            "sha256": "06136945000eb548b7f0ef394b4b23af72ffe173cbee8a0d627ef77d71acc99c"
+          },
+          "settings": {
+            "url": "https://raw.githubusercontent.com/ant-cat/carthing-apps/gh-pages/s/01a1d531-acd3-70f5-be50-0f989ae184ee/0.3.0.html",
+            "size": 36048,
+            "sha256": "fcb55227d096e952b536f97981963a9e359baefcf1ba0a740632a713aa7a5130"
+          },
+          "permissions": [],
+          "extension": {
+            "desktop": true,
+            "permissions": [
+              "read:~",
+              "write:~",
+              "net:api.anthropic.com",
+              "net:platform.claude.com",
+              "net:127.0.0.1",
+              "run:security",
+              "env"
+            ]
+          },
+          "min_libbridgething_version": "0.17.0",
+          "changelog": "A calmer usage screen. Your weekly limit is one big number, the account email is gone in favour of a plan badge, the status line is one dot and one word, the four tabs are page dots you turn with the dial, and old readings dim instead of shouting. The player bar is bigger and only shows while something is playing, and pressing the dial plays or pauses."
+        },
         {
           "version": "0.2.0",
           "released_at": "2026-11-13T19:19:38.015Z",
