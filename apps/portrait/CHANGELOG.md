@@ -1,5 +1,9 @@
 # portrait
 
+## 0.3.2
+
+No changes to the app itself. The install steps in the readme now point to the bridgething store.
+
 ## 0.3.1
 
 The heart only shows when the music source can actually like a song. Playing from your Mac without the Spotify

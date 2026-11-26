@@ -42,8 +42,8 @@ the disconnect and paused triggers still work.
 
 ## Install
 
-**Quickest:** send `Portrait-0.1.0.zip` to your phone and install it from the bridgething
-companion app.
+**Easiest:** in the bridgething companion app on your phone, open the store, find Portrait under Music and
+install it. Updates arrive on their own.
 
 **From source**, with the Car Thing plugged into your computer over USB:
 
